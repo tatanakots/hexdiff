@@ -225,8 +225,8 @@ int main(int argc, char **argv)
 	}
 
 	// Set up signal handler for SIGINT
-	sigint_action.sa_handler = sigint_handler;
-	sigaction(SIGINT, &sigint_action, NULL);
+	// sigint_action.sa_handler = sigint_handler;
+	// sigaction(SIGINT, &sigint_action, NULL);
 
 	// Begin printing output
 	printf("%s   offset      0 1 2 3 4 5 6 7 01234567    "
