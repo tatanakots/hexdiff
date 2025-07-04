@@ -162,9 +162,18 @@ int main(int argc, char **argv)
 	unsigned long long int max_len, skip1, skip2, cnt, eq_run;
 	char *fname1, *fname2;
 	FILE *file1, *file2;
-	struct sigaction sigint_action;
+	// struct sigaction sigint_action;
 	uint8_t buf1[8], buf2[8];
 
+#if defined(_WIN32) || defined(_WIN64)
+	signal(SIGINT, sigint_handler);
+#else
+	struct sigaction sigint_action;
+	sigint_action.sa_handler = sigint_handler;
+	sigemptyset(&sigint_action.sa_mask);
+	sigint_action.sa_flags = 0;
+	sigaction(SIGINT, &sigint_action, NULL);
+#endif
 
 	// Parse the input arguments
 	show_all = 0;
@@ -202,15 +211,15 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	if (fseeko(file1, skip1, 0) != 0) {
+	if (fseeko(file1, skip1, SEEK_SET) != 0) {
 		fprintf(stderr,
-		        "fseek to 0x%x in %s: %s\n", skip1, fname1,
+		        "fseek to 0x%llx in %s: %s\n", skip1, fname1,
 		        strerror(errno));
 		exit(EXIT_FAILURE);
 	}
-	if (fseeko(file2, skip2, 0) != 0) {
+	if (fseeko(file2, skip2, SEEK_SET) != 0) {
 		fprintf(stderr,
-		        "fseek to 0x%x in %s: %s\n", skip2, fname2,
+		        "fseek to 0x%llx in %s: %s\n", skip2, fname2,
 		        strerror(errno));
 		exit(EXIT_FAILURE);
 	}
@@ -263,4 +272,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-
